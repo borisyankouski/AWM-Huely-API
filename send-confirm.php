@@ -9,9 +9,34 @@ define('INDEX', true);
 require 'inc/dbcon.php';
 require 'inc/base.php';
 
-function sendEmailWithTemplateFromQueryParams($uuid){
-    $mail_to = $_GET['mail_to'] ?? '';
-    $name = $_GET['name'] ?? '';
+if (isset($_GET['mail_to']) && isset($_GET['name'])){
+    getIdAndSendMail($_GET['mail_to'], $_GET['name']);
+} else {
+    // echo "Error: Missing query parameters.";
+}
+
+function getIdAndSendMail($email, $name) {
+    global $conn;
+    
+    $stmt = $conn->prepare("SELECT id FROM user WHERE email = ? AND username = ?");
+    if (!$stmt) {
+        die('{"error":"Prepared Statement failed on prepare: ' . $conn->error . '","status":"fail"}');
+    }
+
+    $stmt->bind_param("ss", $email, $name);
+    if (!$stmt->execute()) {
+        die('{"error":"Prepared Statement failed on execute: ' . $stmt->error . '","status":"fail"}');
+    }
+
+    $stmt->bind_result($userId);
+    $stmt->fetch();
+    $stmt->close();
+    sendEmailWithTemplateFromQueryParams($userId, $email, $name);
+}
+
+function sendEmailWithTemplateFromQueryParams($uuid, $email, $name){
+    $mail_to = $email;
+    $name = $name;
 
     // sanitize name and mail
 
@@ -73,24 +98,5 @@ function sendEmailWithTemplateFromQueryParams($uuid){
     } else {
         echo $response;
     }
-}
-
-if (isset($_GET['mail_to']) && isset($_GET['name'])){
-    $stmt = $conn->prepare("SELECT id FROM user WHERE email = ? AND username = ?");
-    if (!$stmt) {
-        die('{"error":"Prepared Statement failed on prepare: ' . $conn->error . '","status":"fail"}');
-    }
-
-    $stmt->bind_param("ss", $_GET['mail_to'], $_GET['name']);
-    if (!$stmt->execute()) {
-        die('{"error":"Prepared Statement failed on execute: ' . $stmt->error . '","status":"fail"}');
-    }
-
-    $stmt->bind_result($userId);
-    $stmt->fetch();
-    $stmt->close();
-    sendEmailWithTemplateFromQueryParams($userId);
-} else {
-    echo "Error: Missing query parameters.";
 }
 ?>

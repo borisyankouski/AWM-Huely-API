@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     // Fetch user data based on username
-    $stmt = $conn->prepare("SELECT id, password FROM user WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM user WHERE username = ?");
     if (!$stmt) {
         echo '{"error":"Prepared Statement failed for user lookup","status":"fail"}';
         exit;
@@ -42,12 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $userRow = $result->fetch_assoc();
     $hashedPassword = $userRow['password'];
+    $userRow['password'] = "hidden"; 
 
     $stmt->close();
 
     // Verify password
     if (password_verify($password, $hashedPassword)) {
-        echo '{"data":"Successful login","status":"ok"}';
+        // echo '{"data":"Successful login","status":"ok"}';
+        echo '{"data":' . json_encode($userRow) . ',"status":"ok"}';
     } else {
         echo '{"error":"Credentials mismatch","status":"fail"}';
     }

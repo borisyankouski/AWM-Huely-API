@@ -6,8 +6,9 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 
 define ('INDEX', true);
 
-require 'inc/dbcon.php';
-require 'inc/base.php';
+// require 'inc/dbcon.php';
+// require 'inc/base.php';
+require 'send-confirm.php';
 
 switch($_SERVER['REQUEST_METHOD']) {
     case 'GET': // GET user { id, email, password, username, isverified }
@@ -28,7 +29,7 @@ switch($_SERVER['REQUEST_METHOD']) {
         deliver_JSONresponse($response);
         break;
     case 'POST': // POST user { id, email, password, username }
-        $id = generateUniqueId($conn);
+        $id = generateUniqueId();
         $hashedPassword = password_hash($postvars['password'], PASSWORD_BCRYPT);
         $email = $postvars['email'];
         $username = $postvars['username'];
@@ -53,13 +54,15 @@ switch($_SERVER['REQUEST_METHOD']) {
             die('{"error":"No rows affected","status":"fail"}');
         }
 
+        getIdAndSendMail($email, $username);
         $stmt->close();
         die('{"data":"ok","message":"Record added successfully","status":"ok"}');
         break;
         
 }
 
-function generateUniqueId($conn) {
+function generateUniqueId() {
+    global $conn;
     do {
         $data = openssl_random_pseudo_bytes(16);
         assert(strlen($data) == 16);
