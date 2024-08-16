@@ -66,6 +66,12 @@ $response['status'] = $api_response_code[$response['code']]['HTTP Response'];
 function deliver_response(&$api_response) {
     // Define HTTP responses
     $http_response_code = array(200 => 'OK', 400 => 'Bad Request', 401 => 'Unauthorized', 403 => 'Forbidden', 404 => 'Not Found');
+    
+    // Ensure the status code exists in the response array
+    if (!isset($http_response_code[$api_response['status']])) {
+        $api_response['status'] = 400; // Default to Bad Request if status is not defined
+    }
+
     // Set HTTP Response
     header('HTTP/1.1 ' . $api_response['status'] . ' ' . $http_response_code[$api_response['status']]);
     // Set HTTP Response Content Type
@@ -77,9 +83,16 @@ function deliver_response(&$api_response) {
     // End script process
     exit;
 }
+
 function deliver_JSONresponse(&$api_response) {
     // Define HTTP responses
     $http_response_code = array(200 => 'OK', 400 => 'Bad Request', 401 => 'Unauthorized', 403 => 'Forbidden', 404 => 'Not Found');
+    
+    // Ensure the status code exists in the response array
+    if (!isset($http_response_code[$api_response['status']])) {
+        $api_response['status'] = 400; // Default to Bad Request if status is not defined
+    }
+
     // Set HTTP Response
     header('HTTP/1.1 ' . $api_response['status'] . ' ' . $http_response_code[$api_response['status']]);
     // Set HTTP Response Content Type
@@ -92,6 +105,7 @@ function deliver_JSONresponse(&$api_response) {
     // End script process
     exit;
 }
+
 /*
  getJsonObjFromResult krijgt een resultset (by reference) en forceert alle
  nummerieke velden naan numerieke waarden, zodat clientside niet nog eens
