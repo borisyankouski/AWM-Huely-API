@@ -22,8 +22,8 @@ switch($_SERVER['REQUEST_METHOD']) {
             $sql = "SELECT id, email, password, username, isVerified FROM user WHERE username = ?";
             $param = $username;
         } else {
-            $response['code'] = 400;
-            $response['status'] = 'Bad Request';
+            $response['code'] = 5;
+            $response['status'] = $api_response_code[$response['code']]['HTTP Response'];
             $response['data'] = 'Email or username must be provided';
             deliver_JSONresponse($response);
             break;
@@ -43,8 +43,8 @@ switch($_SERVER['REQUEST_METHOD']) {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            $response['code'] = 404;
-            $response['status'] = 'Not Found';
+            $response['code'] = 1;
+            $response['status'] = $api_response_code[$response['code']]['HTTP Response'];
             $response['data'] = null;
             deliver_JSONresponse($response);
             break;

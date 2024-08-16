@@ -13,7 +13,7 @@ switch($_SERVER['REQUEST_METHOD']) {
     case 'GET': // GET statistic { id, gamemode, highest_percentage, lowest_tries, user_id, user_username, date }
         $dateRange = $_GET['date_range'] ?? 'alltime';
         $gamemode = $_GET['gamemode'] ?? 'regular';
-        $statistics = getStatisticsByDateRange($conn, $dateRange, $gamemode);
+        $statistics = getStatisticsByDateRange($conn, $api_response_code, $dateRange, $gamemode);
         deliver_JSONresponse($statistics);
         break;
 
@@ -108,7 +108,7 @@ function generateUniqueId($conn) {
     return $uuid;
 }
 
-function getStatisticsByDateRange($conn, $dateRange, $gamemode) {
+function getStatisticsByDateRange($conn, $api_response_code, $dateRange, $gamemode) {
     $sql = "SELECT ";
 
     // Select lowest_tries for perfection gamemode, and highest_percentage for other gamemodes
@@ -193,7 +193,8 @@ function getStatisticsByDateRange($conn, $dateRange, $gamemode) {
         die('{"error":"Failed to get result","status":"fail"}');
     }
 
-
+    $response['code'] = 1;
+    $response['status'] = $api_response_code[$response['code']]['HTTP Response'];
     $response['data'] = getJsonObjFromResult($result);
     $result->free();
     $conn->close();
