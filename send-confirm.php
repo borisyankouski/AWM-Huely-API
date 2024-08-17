@@ -38,8 +38,6 @@ function sendEmailWithTemplateFromQueryParams($uuid, $email, $name){
     $mail_to = $email;
     $name = $name;
 
-    // sanitize name and mail
-
     $api_key = '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';
     $url = 'https://www.kovskib.com/Huely/api/verify-user.php?uuid=' . $uuid;
     $username = ', <strong>' . $name . '</strong>';

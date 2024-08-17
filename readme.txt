@@ -1,7 +1,7 @@
 login.php
     GET
         call with username and password
-        returns either "Succesful login" or "Credentials mismatch"
+        returns either status "ok" or a variation of "fail"
 
 statistic.php
     GET 
@@ -26,7 +26,7 @@ statistic.php
 
 user.php
     GET
-        gets all users
+        call with either username or email to check whether or not the email/username exists in the database
     
     POST
         as JSON object
